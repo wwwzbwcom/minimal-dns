@@ -1,4 +1,4 @@
-const {DNSServer, DNSRecord} = require('./dns-server');
+const { DNSServer, DNSRecord } = require('./dns-server');
 
 // Google DNS Server
 var googleDns = {
@@ -14,6 +14,6 @@ var aliDns = {
 
 var dnsServer = new DNSServer(googleDns);
 
-// Add Some Testing Records
+// Add Some Testing DNS Records
 dnsServer.addRecord(new DNSRecord("example.com.", "1.1.1.1"));
 dnsServer.addRecord(new DNSRecord("myself.com.", "127.0.0.1"));
