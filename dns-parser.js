@@ -81,7 +81,9 @@ class DNSHeader extends SocketMessage {
 
         buf[3] = writeByte(buf[3], this.ra, 0);
         buf[3] = writeByte(buf[3], this.z, 1);
-        buf[3] = writeByte(buf[3], this.rcode, 4);
+        //buf[3] = writeByte(buf[3], this.rcode, 4);
+        
+        buf.writeUIntBE(this.rcode, 3, 1);
 
         buf.writeUInt16BE(this.qdcount, 4);
         buf.writeUInt16BE(this.ancount, 6);

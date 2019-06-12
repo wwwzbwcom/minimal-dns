@@ -30,12 +30,12 @@ class DNSServer {
 
         // Create a UDP server
         this.server = dgram.createSocket('udp4');
-        
+
         // When server receive message
         this.server.on('message', (msg, info) => {
 
             var dns = new DNSMessage();
-            
+
             // Try to Parse it
             try {
                 dns.fromBuffer(msg);
@@ -48,25 +48,33 @@ class DNSServer {
 
             // DNS Message is a Query
             if (dns.header.qr == 0) {
-
                 // Try to response it
                 dns = this.response(dns, info);
                 if (dns != null) {
                     var buf = dns.toBuffer();
                     this.server.send(buf, info.port, info.address);
                 }
-
+                return dns;
             }
             // DNS Message is an Answer
             else {
-                // Check if is from the Remote Server
+                // Check if it is from the Remote Server
                 if (info.address == remoteServerInfo.address && info.port == remoteServerInfo.port) {
-
                     // Find the Corresponding Query and Respond
                     var rinfo = this.requests[dns.header.id];
                     rinfo.hasRespond = true;
-                    this.server.send(msg, rinfo.port, rinfo.address);
+
+                    dns.header.ra = 0;
+                    dns.header.id = rinfo.id;
+                    dns.header.nscount = 0;
+                    dns.header.arcount = 0;
+
+                    if (dns.header.ancount == 0) {
+                        dns.header.rcode = 3;
+                    }
+                    this.server.send(dns.toBuffer(), rinfo.port, rinfo.address);
                 }
+                return dns;
             }
 
 
@@ -92,12 +100,29 @@ class DNSServer {
 
             // Local Record Exists
             if (record) {
-                dns.constructAnswer(record.data, record.dataType);
+                dns.header.qr = 1;
+                if(record.dataType == 'ip' && record.data == "0.0.0.0")
+                {
+                    dns.header.nscount = 0;
+                    dns.header.arcount = 0;
+                    dns.rcode = 3;
+                }
+                else
+                {
+                    dns.header.nscount = 0;
+                    dns.header.arcount = 0;
+                    dns.answer = dns.constructAnswer(record.data, record.dataType);
+                }
             }
             // Local Record Missing
             else {
-                
+
                 if (this.remoteServerInfo) {
+                    //console.log(dns.header.id);
+                    rinfo.id = dns.header.id;
+                    dns.header.id = Buffer.alloc(2);
+                    dns.header.id[0] = Math.round(Math.random() * 256);
+                    dns.header.id[1] = Math.round(Math.random() * 256);
                     this.requests[dns.header.id] = rinfo;
                     var buf = dns.toBuffer();
                     this.server.send(buf, this.remoteServerInfo.port, this.remoteServerInfo.address);
@@ -106,6 +131,7 @@ class DNSServer {
                 else {
                     dns.header.rcode = 3;
                 }
+
             }
 
         }
