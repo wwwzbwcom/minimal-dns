@@ -59,10 +59,10 @@ you can add a custom DNS Records to your DNS Server.
 
 ### DNS Parser
 
-[x] Parse DNS Message From Socket Message
-[x] Encode DNS Message to Socket Message
+- Parse DNS Message From Socket Message
+- Encode DNS Message to Socket Message
 
 ### DNS Server
 
-[x] Can add Custom DNS Records
-[x] Can setup a remote DNS Server and redirect the query (When missing custom DNS Records)
+- Can add some Custom DNS Records
+- Can setup a remote DNS Server and redirect the query (When missing custom DNS Records)
