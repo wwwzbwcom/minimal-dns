@@ -1,5 +1,5 @@
 {
-  "name": "node-dns",
+  "name": "minimal-dns",
   "version": "1.0.0",
   "description": "A simple dns server with node",
   "main": "main.js",

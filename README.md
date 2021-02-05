@@ -1,6 +1,6 @@
 # minimal-dns
 
-A minimal DNS parser and server write by Node.js. Best for learning structure of DNS message.
+A minimal, zero dependencies DNS parser and server write by Node.js. Best for learning structure of DNS message.
 
 ## Dependencies
 
